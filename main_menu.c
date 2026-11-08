@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <linux/input.h>
+#include <unistd.h>
 #include "esc_codes.h"
 #include "Mmenu.h"
 #include "r_KB.h"
+#include "Type_WE.h"
 
 void main_menu() {
 
@@ -37,16 +39,27 @@ void main_menu() {
                 printf("%d. %s <<\n", i+1, buttons[i]);
             }
         }
-        char KC = '\0'; // KeyCode
-        fprintf(f, "До нажатия: %s\n", KC);
+        int KC = 0; // KeyCode
+        fprintf(f, "До нажатия: %d\n", KC);
         read_KB(&KC);
-        fprintf(f, "После нажатия: %s\n", KC);
+        fprintf(f, "После нажатия: %d\n", KC);
 
-        if(KC == KEY_UP && position != 0) {
+        if(KC == 103 && position > 0) {
             position--;
-        } else if(KC == KEY_DOWN && position != count) {
+        } else if(KC == 108 && position != count - 1) {
             position++;
-        } else {
+        } else if(KC == 28) {
+            if(position == 1) {
+                printf(reset);
+                return;
+            } else if(position == 0) {
+                printf(reset);
+                slow_type_text(" Soon...\n", 100 * 1000);
+                usleep(170 * 1000);
+                return;
+            }
+        }
+        else {
             continue;
         }
         fprintf(f, "position: %d\n", position);
